@@ -76,7 +76,11 @@ std::string DeviceNFC::get_name() {
 
 APDU DeviceNFC::execute_command(byte_t const *command, size_t size, char const *name) {
     APDU ret = {0, {0}};
-    ret.size = pn53x_transceive(pnd, command, size, ret.data, sizeof(ret.data), 0);
+    int return_val = pn53x_transceive(pnd, command, size, ret.data, sizeof(ret.data), 0);
+    
+    if(return_val > 0)
+        ret.size = return_val;
+    
     // Be careful, ret.data[0] == 0x00, due to libnfc, then real data comes
 
     if (ret.size > 3) {
